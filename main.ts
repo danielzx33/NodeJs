@@ -1,11 +1,20 @@
-const model = (valor1:string, valor:number)=>{
-    let nome:string;
-    if(valor == 1) nome = valor1;
+import { Server } from "./Server/Server";
 
-    return nome;
-
+const server = new Server();
+server.bootStrap().then(server =>{
+    console.log("rodando em :" + server.application.address().port)
+}).catch(err=>{
+    console.log('Server failed because:')
+    console.error(err)
+    process.exit(1)
 }
+)
 
-console.log(model("teste",1))
-console.log(model("", 2))
-console.log();
+
+
+
+
+
+
+
+
