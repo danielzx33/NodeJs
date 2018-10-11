@@ -1,12 +1,13 @@
 import * as restify from "restify";
 import { promises } from "fs";
+import {Router} from "../router"
 
 
 export class Server{
 
     application: restify.Server
 
-    initRoutes(): Promise<any>{
+    initRoutes(routers: Router[]): Promise<any>{
         return new Promise((resolve,reject) =>{
             try {
                 this.application = restify.createServer({
@@ -16,26 +17,13 @@ export class Server{
 
                 
                 //routes
+                for(let router of routers){
+                    router.aplyRoutes(this.application)
+
+                }
+                this.application.listen(3000, ()=> resolve(this.application))
                 
-                this.application.get("/login",[(req,res,next) =>{
-                    if(req.userAgent && req.userAgent().includes("MSIE 7.0")){
-                        res.json({version: "please update your browser"})
-                        next(false);
-                    }
-                    next()
-                },
-                
-                    (req,res,next)=>{
-                        res.json({login: "nick",
-                        Brownser: req.userAgent(),
-                        url: req.href(),
-                        query: req.query
-                    })
-                    return next();
-                }])
-                this.application.listen(3000, ()=>{
-                resolve(this.application)
-                })
+               
                 
             } catch (error) {
                 reject(error)
@@ -43,7 +31,7 @@ export class Server{
         })
     }
 
-    bootStrap(): Promise<Server>{
-       return this.initRoutes().then(()=>this)
+    bootStrap(routers: Router[] = [] ): Promise<Server>{
+       return this.initRoutes(routers).then(()=>this)
     }
 }
